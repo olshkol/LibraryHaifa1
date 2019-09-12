@@ -172,9 +172,31 @@ public class LibraryService implements ILibrary {
 	}
 
 	@Override
+	@Transactional
 	public LibReturnCode pickupBook(long isbn, long readerId, LocalDate pickupDate) {
-		// TODO Auto-generated method stub
-		return null;
+
+		BookEntity book = bookRepo.findById(isbn).orElse(null);
+		
+		if (Objects.isNull(book)) {
+			return LibReturnCode.BOOK_NOT_EXISTS;
+		}
+		if (recordRepo.countByBookAndDateOfReturningNull(book) == book.getAmountInLibrary()) {
+			return LibReturnCode.ALL_EXEMPLARS_IN_USE;
+		}
+		if (!Objects.isNull(book.getArchivingDate())) {
+			return LibReturnCode.BOOK_IN_ARCHIVE;
+		}
+		
+		ReaderEntity reader = readerRepo.findById(readerId).orElse(null);
+		
+		if (Objects.isNull(reader)) {
+			return LibReturnCode.READER_NOT_EXISTS;
+		}
+		if (recordRepo.existsByBookAndDateOfReturningIsNullAndReader(book, reader)) {
+			return LibReturnCode.READER_BOOK_NOT_RETURN;
+		}
+		recordRepo.save(new RecordEntity(pickupDate, book, reader));
+		return LibReturnCode.OK;
 	}
 
 	@Override

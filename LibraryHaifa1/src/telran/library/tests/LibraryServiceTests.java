@@ -9,7 +9,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import telran.library.dto.Book;
 import telran.library.dto.LibReturnCode;
@@ -20,8 +22,11 @@ import telran.library.service.interfaces.ILibrary;
 
 import java.time.LocalDate;
 import java.util.*;
+//Three annotations below are because of LibraryServiceTests in not root package
+@SpringBootApplication(scanBasePackages = "telran.library")  // components root directory
+@EnableJpaRepositories(basePackages = "telran.library.service")  // repositories root directory
+@EntityScan(basePackages = "telran.library.domain.entities")// entities root directory
 
-@SpringBootApplication(scanBasePackages = "telran.library")
 class LibraryServiceTests {
 	
 	ConfigurableApplicationContext configurableApplicationContext;

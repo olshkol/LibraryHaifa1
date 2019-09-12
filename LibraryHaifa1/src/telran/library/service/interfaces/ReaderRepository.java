@@ -6,4 +6,5 @@ import telran.library.domain.entities.ReaderEntity;
 
 public interface ReaderRepository extends JpaRepository<ReaderEntity, Long> {
 
+
 }
