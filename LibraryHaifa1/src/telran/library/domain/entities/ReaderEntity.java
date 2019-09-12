@@ -1,8 +1,12 @@
 package telran.library.domain.entities;
 
 import lombok.*;
+import telran.library.dto.Reader;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -34,4 +38,13 @@ public class ReaderEntity {
 
     @OneToMany(mappedBy = "reader")
     Set<RecordEntity> records;
+
+    public Reader getReaderDTO(){
+        return new Reader(id, fullName, phone, email, address, birthDate);
+    }
+
+    public ReaderEntity (Reader reader){
+        this(reader.getId(), reader.getFullName(), reader.getPhone(),
+                reader.getEmail(), reader.getAddress(), reader.getBirthDate());
+    }
 }

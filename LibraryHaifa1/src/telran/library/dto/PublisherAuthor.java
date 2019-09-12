@@ -39,5 +39,4 @@ public class PublisherAuthor {
 			return false;
 		return true;
 	}
-
 }

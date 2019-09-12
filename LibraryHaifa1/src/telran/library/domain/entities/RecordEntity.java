@@ -22,7 +22,7 @@ public class RecordEntity {
     @Setter boolean bookIsLost=false;
 
     @ManyToOne
-     BookEntity book;
+    BookEntity book;
 
     @ManyToOne
     ReaderEntity reader;
