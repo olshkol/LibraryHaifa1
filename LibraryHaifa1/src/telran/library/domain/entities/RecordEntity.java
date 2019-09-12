@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode(of = "recordId")
 @ToString(exclude = {"book", "reader"})
 @Getter
-
+@Setter
 @Entity
 @Table(name = "records")
 public class RecordEntity {

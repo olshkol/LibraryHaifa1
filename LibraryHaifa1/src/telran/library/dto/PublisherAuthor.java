@@ -1,5 +1,9 @@
 package telran.library.dto;
 
+import lombok.Setter;
+
+@Setter
+
 public class PublisherAuthor {
 	String name;
 	String country;
