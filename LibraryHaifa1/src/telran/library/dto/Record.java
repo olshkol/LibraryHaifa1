@@ -2,6 +2,8 @@ package telran.library.dto;
 
 import java.time.LocalDate;
 
+import lombok.Setter;
+@Setter
 public class Record {
 	 long  isbn;
 	 long  readerId;

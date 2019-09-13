@@ -11,7 +11,7 @@ import javax.persistence.Table;
 @EqualsAndHashCode(of = "name")
 @ToString
 @Getter
-
+@Setter
 @Entity
 @Table(name = "authors")
 public class AuthorEntity {

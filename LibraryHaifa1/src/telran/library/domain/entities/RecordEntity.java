@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode(of = "recordId")
 @ToString(exclude = {"book", "reader"})
 @Getter
-
+@Setter
 @Entity
 @Table(name = "records")
 public class RecordEntity {
@@ -17,9 +17,9 @@ public class RecordEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int recordId;
     LocalDate datePickingingUp;
-    @Setter LocalDate dateOfReturning=null;
-    @Setter int daysDelayed=0;
-    @Setter boolean bookIsLost=false;
+    LocalDate dateOfReturning=null;
+     int daysDelayed=0;
+   boolean bookIsLost=false;
 
     @ManyToOne
      BookEntity book;

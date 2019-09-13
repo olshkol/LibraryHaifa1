@@ -10,7 +10,7 @@ import java.util.Set;
 @EqualsAndHashCode(of = "id")
 @ToString(exclude = "records")
 @Getter
-
+@Setter
 @Entity
 @Table(name = "readers")
 public class ReaderEntity {
