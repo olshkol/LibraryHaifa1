@@ -1,11 +1,9 @@
 package telran.library.domain.entities;
+
 import lombok.*;
-import telran.library.dto.Book;
 import telran.library.dto.SubjectBook;
 
 import javax.persistence.*;
-
-
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -14,6 +12,7 @@ import java.util.Set;
 @ToString(exclude = {"authors", "publisher", "records"})
 @Getter
 @Setter
+
 @Entity
 @Table(name = "books")
 public class BookEntity {
@@ -21,14 +20,13 @@ public class BookEntity {
     long isbn;
     int publishingYear;
     String title;
-    @Setter int amountInLibrary; //setter
-    @Setter int shelf;//setter
-    @Enumerated(EnumType.STRING)
+    int amountInLibrary;
+    int shelf;
+    @Enumerated(EnumType.STRING) // enum as string in database
     SubjectBook subject;
-
     String language;
-    @Setter int maxDaysInUse; //setter
-    @Setter LocalDate archivingDate; //setter
+    int maxDaysInUse;
+    LocalDate archivingDate;
     @ManyToMany
     Set<AuthorEntity> authors;
 
@@ -52,17 +50,4 @@ public class BookEntity {
 		this.authors = authors;
 		this.publisher = publisher;
 	}
-	public BookEntity(Book book, Set<AuthorEntity> authors, PublisherEntity publisher){
-	    this(book.getIsbn(),
-                book.getPublishingYear(),
-                book.getTitle(),
-                book.getAmountInLibrary(),
-                0,
-                book.getSubject(),
-                book.getLanguage(),
-                book.getMaxDaysInUse(),
-                authors,
-                publisher);
-    }
-    
 }

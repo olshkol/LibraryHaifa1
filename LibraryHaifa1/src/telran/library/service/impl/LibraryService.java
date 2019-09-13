@@ -20,29 +20,21 @@ import telran.library.service.interfaces.PublisherRepository;
 import telran.library.service.interfaces.ReaderRepository;
 import telran.library.service.interfaces.RecordRepository;
 import telran.library.domain.entities.*;
-public class LibraryService implements ILibrary {
 
-	@Autowired
-	BookRepository bookRepo;
-	@Autowired
-	AuthorRepository authorRepo;
-	@Autowired
-	PublisherRepository publisherRepo;
-	@Autowired
-	ReaderRepository readerRepo;
-	@Autowired
-	RecordRepository recordRepo;
-	
-	@Autowired
-	Mapper<BookEntity, Book> bookMapper;
-	@Autowired
-	Mapper<ReaderEntity, Reader> readerMapper;
-	@Autowired
-	Mapper<AuthorEntity, PublisherAuthor> authorMapper;
-	@Autowired
-	Mapper<PublisherEntity, PublisherAuthor> publisherMapper;
-	@Autowired
-	Mapper<RecordEntity, Record> recordMapper;
+@Service
+@AllArgsConstructor(onConstructor = @__(@Autowired))
+public class LibraryService implements ILibrary {
+    BookRepository bookRepository;
+    AuthorRepository authorRepository;
+    PublisherRepository publisherRepository;
+    ReaderRepository readerRepository;
+    RecordRepository recordRepository;
+
+    Mapper<BookEntity, Book> bookMapper;
+    Mapper<AuthorEntity, PublisherAuthor> authorMapper;
+    Mapper<PublisherEntity, PublisherAuthor> publisherMapper;
+    Mapper<ReaderEntity, Reader> readerMapper;
+    Mapper<RecordEntity, Record> recordMapper;
 	
 	
 	@Override
@@ -93,11 +85,13 @@ public class LibraryService implements ILibrary {
 		return null;
 	}
 
-	@Override
-	public LibReturnCode addReader(Reader reader) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public LibReturnCode addReader(Reader reader) {
+        if (readerRepository.existsById(reader.getId()))
+            return LibReturnCode.READER_ALREADY_EXISTS;
+        readerRepository.save(readerMapper.toEntity(reader));
+        return LibReturnCode.OK;
+    }
 
 	@Override
 	public Reader getReader(long readerId) {
@@ -123,53 +117,72 @@ public class LibraryService implements ILibrary {
 		return null;
 	}
 
-	@Override
-	public LibReturnCode addPublisher(PublisherAuthor publisher) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public LibReturnCode addPublisher(PublisherAuthor publisher) {
+        if (publisherRepository.existsById(publisher.getName()))
+            return LibReturnCode.PUBLISHER_ALREADY_EXISTS;
+        publisherRepository.save(publisherMapper.toEntity(publisher));
+        return LibReturnCode.OK;
+    }
 
-	@Override
-	public PublisherAuthor getPublisherByName(String publisherName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public PublisherAuthor getPublisherByName(String publisherName) {
+        Optional<PublisherEntity> publisher = publisherRepository.findById(publisherName);
+        return publisher.map(publisherMapper::toDto).orElse(null);
+    }
 
-	@Override
-	public List<PublisherAuthor> getPublishersByCountry(String country) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public List<PublisherAuthor> getPublishersByCountry(String country) {
+        return publisherRepository.getPublisherEntitiesByCountry(country)
+                .stream()
+                .map(publisherMapper::toDto)
+                .collect(Collectors.toList());
+    }
 
-	@Override
-	public PublisherAuthor getPublisherByBook(long isbn) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public PublisherAuthor getPublisherByBook(long isbn) {
+        Optional<BookEntity> bookEntity = bookRepository.findById(isbn);
+        return bookEntity.map(entity -> (publisherMapper.toDto(entity.getPublisher()))).orElse(null);
+    }
 
-	@Override
-	public LibReturnCode addAuthor(PublisherAuthor author) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public LibReturnCode addAuthor(PublisherAuthor author) {
+        if (authorRepository.existsById(author.getName()))
+            return LibReturnCode.AUTHOR_ALREADY_EXISTS;
+        AuthorEntity entity = authorMapper.toEntity(author);
+        authorRepository.save(entity);
+        return LibReturnCode.OK;
+    }
 
-	@Override
-	public List<PublisherAuthor> getAuthorsByName(String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public List<PublisherAuthor> getAuthorsByName(String name) {
+        // TODO author one as name is Id
+        List<PublisherAuthor> authors = new ArrayList<>();
+        Optional<AuthorEntity> authorEntity = authorRepository.findById(name);
+        authorEntity.ifPresent(entity -> authors.add(authorMapper.toDto(entity)));
+        return authors;
+    }
 
-	@Override
-	public List<PublisherAuthor> getAuthorsByCountry(String country) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public List<PublisherAuthor> getAuthorsByCountry(String country) {
+        return authorRepository.getAuthorEntitiesByCountry(country)
+                .stream()
+                .map(authorMapper::toDto)
+                .collect(Collectors.toList());
+    }
 
-	@Override
-	public List<PublisherAuthor> getAuthorsByBook(long isbn) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public List<PublisherAuthor> getAuthorsByBook(long isbn) {
+        Optional<BookEntity> bookEntity = bookRepository.findById(isbn);
+        List<PublisherAuthor> authors = new ArrayList<>();
+        if (bookEntity.isPresent()) {
+            authors = bookEntity.get().getAuthors()
+                    .stream()
+                    .map(authorEntity -> new PublisherAuthor(authorEntity.getName(), authorEntity.getCountry()))
+                    .collect(Collectors.toList());
+        }
+        return authors;
+    }
 
 	@Override
 	@Transactional
