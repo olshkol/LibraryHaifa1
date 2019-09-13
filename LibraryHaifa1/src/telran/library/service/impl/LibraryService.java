@@ -3,13 +3,14 @@ package telran.library.service.impl;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import telran.library.domain.entities.*;
 import telran.library.dto.*;
 import telran.library.service.interfaces.*;
+import telran.library.service.mappers.Mapper;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,13 +18,20 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class LibraryService implements ILibrary {
-    final BookRepository bookRepository;
-    final AuthorRepository authorRepository;
-    final PublisherRepository publisherRepository;
-    final ReaderRepository readerRepository;
-    final RecordRepository recordRepository;
+    BookRepository bookRepository;
+    AuthorRepository authorRepository;
+    PublisherRepository publisherRepository;
+    ReaderRepository readerRepository;
+    RecordRepository recordRepository;
+
+    Mapper<BookEntity, Book> bookMapper;
+    Mapper<AuthorEntity, PublisherAuthor> authorMapper;
+    Mapper<PublisherEntity, PublisherAuthor> publisherMapper;
+    Mapper<ReaderEntity, Reader> readerMapper;
+    Mapper<RecordEntity, Record> recordMapper;
 
     @Override
+    @Transactional
     public LibReturnCode addBookItem(Book book) {
         if (bookRepository.existsById(book.getIsbn()))
             return LibReturnCode.BOOK_ALREADY_EXISTS;
@@ -33,12 +41,10 @@ public class LibraryService implements ILibrary {
             return LibReturnCode.PUBLISHER_NOT_EXISTS;
 
         List<AuthorEntity> authorEntities = authorRepository.findAllById(book.getAuthors());
-        if (authorEntities.isEmpty())
+        if (authorEntities.size() < book.getAuthors().size())
             return LibReturnCode.AUTHOR_NOT_EXISTS;
 
-        BookEntity bookEntity = new BookEntity(book, new HashSet<>(authorEntities), publisherEntity);
-
-        bookRepository.save(bookEntity);
+        bookRepository.save(bookMapper.toEntity(book));
         return LibReturnCode.OK;
     }
 
@@ -49,9 +55,11 @@ public class LibraryService implements ILibrary {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Book getBookItem(long isbn) {
-        Optional<BookEntity> book = bookRepository.findById(isbn);
-        return book.map(BookEntity::getBookDTO).orElse(null);
+        BookEntity bookEntity = bookRepository.findById(isbn).orElse(null);
+        if (bookEntity == null) return null;
+        return bookMapper.toDto(bookEntity);
     }
 
     @Override
@@ -74,14 +82,9 @@ public class LibraryService implements ILibrary {
 
     @Override
     public LibReturnCode addReader(Reader reader) {
-        if (reader == null)
-            return LibReturnCode.WRONG_DATA;
         if (readerRepository.existsById(reader.getId()))
             return LibReturnCode.READER_ALREADY_EXISTS;
-
-        ReaderEntity readerEntity = new ReaderEntity(reader);
-
-        readerRepository.save(readerEntity);
+        readerRepository.save(readerMapper.toEntity(reader));
         return LibReturnCode.OK;
     }
 
@@ -111,45 +114,38 @@ public class LibraryService implements ILibrary {
 
     @Override
     public LibReturnCode addPublisher(PublisherAuthor publisher) {
-        if (publisher == null ||
-                publisher.getName() == null || publisher.getName().isEmpty() ||
-                publisher.getCountry() == null || publisher.getCountry().isEmpty())
-            return LibReturnCode.WRONG_DATA;
         if (publisherRepository.existsById(publisher.getName()))
             return LibReturnCode.PUBLISHER_ALREADY_EXISTS;
-        publisherRepository.save(new PublisherEntity(publisher));
+        publisherRepository.save(publisherMapper.toEntity(publisher));
         return LibReturnCode.OK;
     }
 
     @Override
     public PublisherAuthor getPublisherByName(String publisherName) {
         Optional<PublisherEntity> publisher = publisherRepository.findById(publisherName);
-        return publisher.map(PublisherEntity::getPublisherDTO).orElse(null);
+        return publisher.map(publisherMapper::toDto).orElse(null);
     }
 
     @Override
     public List<PublisherAuthor> getPublishersByCountry(String country) {
         return publisherRepository.getPublisherEntitiesByCountry(country)
                 .stream()
-                .map(PublisherEntity::getPublisherDTO)
+                .map(publisherMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public PublisherAuthor getPublisherByBook(long isbn) {
         Optional<BookEntity> bookEntity = bookRepository.findById(isbn);
-        return bookEntity.map(entity -> (entity.getPublisher().getPublisherDTO())).orElse(null);
+        return bookEntity.map(entity -> (publisherMapper.toDto(entity.getPublisher()))).orElse(null);
     }
 
     @Override
     public LibReturnCode addAuthor(PublisherAuthor author) {
-        if (author == null ||
-                author.getName() == null || author.getName().isEmpty() ||
-                author.getCountry() == null || author.getCountry().isEmpty())
-            return LibReturnCode.WRONG_DATA;
         if (authorRepository.existsById(author.getName()))
             return LibReturnCode.AUTHOR_ALREADY_EXISTS;
-        authorRepository.save(new AuthorEntity(author.getName(), author.getCountry()));
+        AuthorEntity entity = authorMapper.toEntity(author);
+        authorRepository.save(entity);
         return LibReturnCode.OK;
     }
 
@@ -158,7 +154,7 @@ public class LibraryService implements ILibrary {
         // TODO author one as name is Id
         List<PublisherAuthor> authors = new ArrayList<>();
         Optional<AuthorEntity> authorEntity = authorRepository.findById(name);
-        authorEntity.ifPresent(entity -> authors.add(entity.getAuthorDTO()));
+        authorEntity.ifPresent(entity -> authors.add(authorMapper.toDto(entity)));
         return authors;
     }
 
@@ -166,7 +162,7 @@ public class LibraryService implements ILibrary {
     public List<PublisherAuthor> getAuthorsByCountry(String country) {
         return authorRepository.getAuthorEntitiesByCountry(country)
                 .stream()
-                .map(AuthorEntity::getAuthorDTO)
+                .map(authorMapper::toDto)
                 .collect(Collectors.toList());
     }
 

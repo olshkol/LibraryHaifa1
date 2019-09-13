@@ -1,7 +1,6 @@
 package telran.library.domain.entities;
 
 import lombok.*;
-import telran.library.dto.Reader;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -14,6 +13,7 @@ import java.util.Set;
 @EqualsAndHashCode(of = "id")
 @ToString(exclude = "records")
 @Getter
+@Setter
 
 @Entity
 @Table(name = "readers")
@@ -38,13 +38,4 @@ public class ReaderEntity {
 
     @OneToMany(mappedBy = "reader")
     Set<RecordEntity> records;
-
-    public Reader getReaderDTO(){
-        return new Reader(id, fullName, phone, email, address, birthDate);
-    }
-
-    public ReaderEntity (Reader reader){
-        this(reader.getId(), reader.getFullName(), reader.getPhone(),
-                reader.getEmail(), reader.getAddress(), reader.getBirthDate());
-    }
 }

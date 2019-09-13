@@ -1,6 +1,11 @@
 package telran.library.dto;
+
+import lombok.Setter;
+
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Set;
+
+@Setter
 public class Book {
 	long isbn;
 	int publishingYear;

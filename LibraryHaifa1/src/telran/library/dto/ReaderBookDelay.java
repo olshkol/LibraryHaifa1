@@ -1,5 +1,8 @@
 package telran.library.dto;
 
+import lombok.Setter;
+
+@Setter
 public class ReaderBookDelay {
 long isbn;
 long readerId;

@@ -1,11 +1,12 @@
 package telran.library.tests;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import telran.library.dto.*;
 import telran.library.service.interfaces.ILibrary;
@@ -13,18 +14,15 @@ import telran.library.service.interfaces.ILibrary;
 import java.time.LocalDate;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootApplication
-@ComponentScan(basePackages = "telran.library.service")
-@EnableJpaRepositories(basePackages = "telran.library.service")
-@EntityScan(basePackages = "telran.library.domain.entities")
-//@SpringBootApplication(scanBasePackages = "telran.library")
+@SpringBootApplication (scanBasePackages = "telran.library") // components root directory (component, service, repository)
+@EnableJpaRepositories(basePackages = "telran.library.service") // repositories
+@EntityScan(basePackages = "telran.library.domain.entities") //entities
 class LibraryServiceTest {
-    private ConfigurableApplicationContext applicationContext;
+    static ConfigurableApplicationContext applicationContext;
 
-    private ILibrary libraryService;
+    static ILibrary libraryService;
 
     private static final long ISBN1 = 1;
     private static final int PUBLISH_YEAR1 = 2010;
@@ -40,26 +38,15 @@ class LibraryServiceTest {
     private static final String ADDRESS1 = "address1";
     private static final int BIRTH_YEAR1 = 1980;
     private static final LocalDate BIRTH_DATE1 = LocalDate.of(BIRTH_YEAR1, 1, 1);
-    Set<String> authors1 = new HashSet<>(Arrays.asList(AUTHOR_NAME1));
+    private static Set<String> authors1 = new HashSet<>(Arrays.asList(AUTHOR_NAME1));
     private static final String TITLE1 = "title1";
     private static final int AMOUNT1 = 10;
     private static final SubjectBook SUBJECT1 = SubjectBook.EDUCATION;
 
-    Book book1 = new Book(ISBN1, PUBLISH_YEAR1, PUBLISHER_NAME1, authors1, TITLE1, AMOUNT1, SUBJECT1, LANGUAGE1, MAX_DAYS1);
-    PublisherAuthor publisher1 = new PublisherAuthor(PUBLISHER_NAME1, COUNTRY1);
-    PublisherAuthor author1 = new PublisherAuthor(AUTHOR_NAME1, COUNTRY1);
-    Reader reader1 = new Reader(READER_ID1, READER_NAME1, PHONE1, EMAIL1, ADDRESS1, BIRTH_DATE1);
-
-
-    @BeforeAll
-    static void setUpBeforeClass() throws Exception {
-        // TODO (11.09.2019) setUpBeforeClass
-    }
-
-    @AfterAll
-    static void tearDownAfterClass() throws Exception {
-        // TODO (11.09.2019) tearDownAfterClass
-    }
+    private static Book book1 = new Book(ISBN1, PUBLISH_YEAR1, PUBLISHER_NAME1, authors1, TITLE1, AMOUNT1, SUBJECT1, LANGUAGE1, MAX_DAYS1);
+    private static PublisherAuthor publisher1 = new PublisherAuthor(PUBLISHER_NAME1, COUNTRY1);
+    private static PublisherAuthor author1 = new PublisherAuthor(AUTHOR_NAME1, COUNTRY1);
+    private static Reader reader1 = new Reader(READER_ID1, READER_NAME1, PHONE1, EMAIL1, ADDRESS1, BIRTH_DATE1);
 
     @BeforeEach
     void setUp() {
@@ -86,8 +73,10 @@ class LibraryServiceTest {
                 5, SUBJECT1,"HH", 10);
         assertEquals(LibReturnCode.PUBLISHER_NOT_EXISTS, libraryService.addBookItem(book2));
 
+        Set<String> authors2 = new HashSet<>();
+        authors2.add("111");
         Book book3 = new Book(
-                ISBN1+10, PUBLISH_YEAR1, PUBLISHER_NAME1, new HashSet<>(), "title",
+                ISBN1+10, PUBLISH_YEAR1, PUBLISHER_NAME1, authors2, "title",
                 5, SUBJECT1,"HH", 10);
         assertEquals(LibReturnCode.AUTHOR_NOT_EXISTS, libraryService.addBookItem(book3));
 
@@ -99,39 +88,39 @@ class LibraryServiceTest {
 
     @Test
     void addBookExemplar() {
+        fail("Not yet implemented");
         //TODO addBookExemplar (Oleg, 11.09.2019)
-
     }
 
     @Test
     void getBookItem() {
         assertNull(libraryService.getBookItem(ISBN1+10));
-
         assertEquals(book1, libraryService.getBookItem(ISBN1));
     }
 
     @Test
     void moveToArchive() {
+        fail("Not yet implemented");
         //TODO moveToArchive (Oleg, 11.09.2019)
 
     }
 
     @Test
     void removeExemplar() {
+        fail("Not yet implemented");
         //TODO removeExemplar (Oleg, 11.09.2019)
 
     }
 
     @Test
     void lostExemplar() {
+        fail("Not yet implemented");
         //TODO lostExemplar (Oleg, 11.09.2019)
 
     }
 
     @Test
     void addReader() {
-        assertEquals(LibReturnCode.WRONG_DATA, libraryService.addReader(null));
-
         assertEquals(LibReturnCode.READER_ALREADY_EXISTS, libraryService.addReader(reader1));
 
         Reader reader2 = new Reader(READER_ID1+5, READER_NAME1, PHONE1, EMAIL1, ADDRESS1, BIRTH_DATE1);
@@ -140,24 +129,28 @@ class LibraryServiceTest {
 
     @Test
     void getReader() {
+        fail("Not yet implemented");
         //TODO getReader (Oleg, 11.09.2019)
 
     }
 
     @Test
     void updateReaderEmail() {
+        fail("Not yet implemented");
         //TODO updateReaderEmail (Oleg, 11.09.2019)
 
     }
 
     @Test
     void updateReaderPhone() {
+        fail("Not yet implemented");
         //TODO updateReaderPhone (Oleg, 11.09.2019)
 
     }
 
     @Test
     void updateReaderAddress() {
+        fail("Not yet implemented");
         //TODO updateReaderAddress (Oleg, 11.09.2019)
 
     }
@@ -165,10 +158,6 @@ class LibraryServiceTest {
     @Test
     void addPublisher() {
         assertEquals(LibReturnCode.PUBLISHER_ALREADY_EXISTS, libraryService.addPublisher(publisher1));
-
-        PublisherAuthor publisher2 = new PublisherAuthor();
-        assertEquals(LibReturnCode.WRONG_DATA, libraryService.addPublisher(publisher2));
-
         PublisherAuthor publisher3 = new PublisherAuthor("Publisher2", COUNTRY1);
         assertEquals(LibReturnCode.OK, libraryService.addPublisher(publisher3));
     }
@@ -176,7 +165,6 @@ class LibraryServiceTest {
     @Test
     void getPublisherByName() {
         assertNull(libraryService.getPublisherByName("hhh"));
-
         assertEquals(publisher1, libraryService.getPublisherByName(PUBLISHER_NAME1));
     }
 
@@ -193,17 +181,12 @@ class LibraryServiceTest {
     @Test
     void getPublisherByBook() {
         assertNull(libraryService.getPublisherByBook(ISBN1+10));
-
         assertEquals(publisher1, libraryService.getPublisherByBook(ISBN1));
     }
 
     @Test
     void addAuthor() {
         assertEquals(LibReturnCode.AUTHOR_ALREADY_EXISTS, libraryService.addAuthor(author1));
-
-        PublisherAuthor author2 = new PublisherAuthor();
-        assertEquals(LibReturnCode.WRONG_DATA, libraryService.addPublisher(author2));
-
         PublisherAuthor author3 = new PublisherAuthor("Author2", COUNTRY1);
         assertEquals(LibReturnCode.OK, libraryService.addPublisher(author3));
     }
@@ -211,7 +194,6 @@ class LibraryServiceTest {
     @Test
     void getAuthorsByName() {
         assertEquals(new ArrayList<>(),libraryService.getAuthorsByName("hhh"));
-
         List<PublisherAuthor> authors = new ArrayList<>(Arrays.asList(author1));
         assertEquals(authors, libraryService.getAuthorsByName(AUTHOR_NAME1));
     }
@@ -219,7 +201,6 @@ class LibraryServiceTest {
     @Test
     void getAuthorsByCountry() {
         assertEquals(new ArrayList<>(), libraryService.getAuthorsByCountry("hh"));
-
         PublisherAuthor author2 = new PublisherAuthor("Author2", COUNTRY1);
         libraryService.addAuthor(author2);
         List<PublisherAuthor> authors = new ArrayList<>(Arrays.asList(author1, author2));
@@ -237,60 +218,70 @@ class LibraryServiceTest {
 
     @Test
     void pickupBook() {
+        fail("Not yet implemented");
         //TODO pickupBook (Oleg, 11.09.2019)
 
     }
 
     @Test
     void returnBook() {
+        fail("Not yet implemented");
         //TODO returnBook (Oleg, 11.09.2019)
 
     }
 
     @Test
     void findRecordsByBook() {
+        fail("Not yet implemented");
         //TODO findRecordsByBook (Oleg, 11.09.2019)
 
     }
 
     @Test
     void findRecordsByReader() {
+        fail("Not yet implemented");
         //TODO findRecordsByReader (Oleg, 11.09.2019)
 
     }
 
     @Test
     void findRecordsByReturnDate() {
+        fail("Not yet implemented");
         //TODO findRecordsByReturnDate (Oleg, 11.09.2019)
 
     }
 
     @Test
     void findOpenRecords() {
+        fail("Not yet implemented");
         //TODO findOpenRecords (Oleg, 11.09.2019)
 
     }
 
     @Test
     void getBooksNotPickedUp() {
+        fail("Not yet implemented");
         //TODO getBooksNotPickedUp (Oleg, 11.09.2019)
 
     }
 
     @Test
     void isExistBookInArchive() {
+        fail("Not yet implemented");
         //TODO isExistBookInArchive (Oleg, 11.09.2019)
 
     }
 
     @Test
     void getDelayedBooksByReader() {
+        fail("Not yet implemented");
         //TODO getDelayedBooksByReader (Oleg, 11.09.2019)
 
     }
 
     @Test
     void getReadersDelayingBooks() {
+        fail("Not yet implemented");
         //TODO getReadersDelayingBooks (Oleg, 11.09.2019)
 
     }
