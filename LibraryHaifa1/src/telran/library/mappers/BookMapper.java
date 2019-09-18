@@ -1,17 +1,18 @@
 package telran.library.mappers;
 
-import telran.library.dto.*;
-import telran.library.service.interfaces.*;
-import telran.library.domain.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import telran.library.domain.entities.AuthorEntity;
+import telran.library.domain.entities.BookEntity;
+import telran.library.dto.Book;
+import telran.library.service.interfaces.AuthorRepository;
+import telran.library.service.interfaces.PublisherRepository;
+import telran.library.service.interfaces.RecordRepository;
 
 import javax.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Component
 public class BookMapper extends AbstractMapper<BookEntity, Book> {
 
     @Autowired
@@ -23,7 +24,7 @@ public class BookMapper extends AbstractMapper<BookEntity, Book> {
     @Autowired
     private RecordRepository recordRepo;
 
-    public BookMapper(Class<BookEntity> entityClass, Class<Book> dtoClass) {
+    BookMapper(Class<BookEntity> entityClass, Class<Book> dtoClass) {
         super(entityClass, dtoClass);
     }
 
@@ -56,7 +57,7 @@ public class BookMapper extends AbstractMapper<BookEntity, Book> {
         book.setAmountInUse(
         		recordRepo.countByBookAndDateOfReturningNull(bookEntity));
         book.setAuthors(bookEntity.getAuthors().stream()
-        		.map(author->author.getName())
+        		.map(AuthorEntity::getName)
         		.collect(Collectors.toSet()));
     }
 }

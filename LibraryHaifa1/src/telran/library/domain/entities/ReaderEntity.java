@@ -2,7 +2,10 @@ package telran.library.domain.entities;
 
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -14,6 +17,17 @@ import java.util.Set;
 @Entity
 @Table(name = "readers")
 public class ReaderEntity {
+    @Id
+    long id;
+    String fullName;
+    String phone;
+    String email;
+    String address;
+    LocalDate birthDate;
+
+    @OneToMany(mappedBy = "reader")
+    Set<RecordEntity> records;
+
     public ReaderEntity(long id, String fullName, String phone, String email, String address, LocalDate birthDate) {
 		super();
 		this.id = id;
@@ -23,15 +37,4 @@ public class ReaderEntity {
 		this.address = address;
 		this.birthDate = birthDate;
 	}
-
-	@Id
-    long id;
-    String fullName;
-    @Setter String phone;
-    @Setter String email;
-    @Setter String address;
-    LocalDate birthDate;
-
-    @OneToMany(mappedBy = "reader")
-    Set<RecordEntity> records;
 }

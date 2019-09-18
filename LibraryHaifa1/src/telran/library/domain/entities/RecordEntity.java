@@ -17,22 +17,21 @@ public class RecordEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int recordId;
     LocalDate datePickingingUp;
-    LocalDate dateOfReturning=null;
-     int daysDelayed=0;
-   boolean bookIsLost=false;
+    LocalDate dateOfReturning = null;
+    boolean bookIsLost = false;
 
     @ManyToOne
-     BookEntity book;
+    BookEntity book;
 
     @ManyToOne
     ReaderEntity reader;
 
-	public RecordEntity(LocalDate datePickingingUp, BookEntity book, ReaderEntity reader) {
-		super();
-		this.datePickingingUp = datePickingingUp;
-		this.book = book;
-		this.reader = reader;
-	}
-    
-    
+    public RecordEntity(LocalDate datePickingingUp, BookEntity book, ReaderEntity reader) {
+        super();
+        this.datePickingingUp = datePickingingUp;
+        this.book = book;
+        this.reader = reader;
+    }
+
+
 }

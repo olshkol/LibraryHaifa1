@@ -2,17 +2,16 @@ package telran.library.mappers;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import telran.library.domain.entities.RecordEntity;
 import telran.library.dto.Record;
 import telran.library.service.interfaces.BookRepository;
 import telran.library.service.interfaces.ReaderRepository;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
-@Component
 public class RecordMapper extends AbstractMapper<RecordEntity, Record> {
 
     @Autowired
@@ -21,7 +20,7 @@ public class RecordMapper extends AbstractMapper<RecordEntity, Record> {
     @Autowired
     private ReaderRepository readerRepo;
 
-    public RecordMapper(Class<RecordEntity> entityClass, Class<Record> dtoClass) {
+    RecordMapper(Class<RecordEntity> entityClass, Class<Record> dtoClass) {
         super(entityClass, dtoClass);
     }
 
@@ -50,6 +49,9 @@ public class RecordMapper extends AbstractMapper<RecordEntity, Record> {
         if(!Objects.isNull(recordEntity)) {
             record.setIsbn(recordEntity.getBook().getIsbn());
             record.setReaderId(recordEntity.getReader().getId());
+            record.setDatePickingUp(recordEntity.getDatePickingingUp());
+            long daysInUse = ChronoUnit.DAYS.between(recordEntity.getDatePickingingUp(), LocalDate.now());
+            record.setDaysDelayed(daysInUse - recordEntity.getBook().getMaxDaysInUse());
         }
     }
 

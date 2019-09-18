@@ -9,11 +9,12 @@ import java.util.Objects;
 public abstract class AbstractMapper<E, D> implements Mapper<E, D> {
 
     @Autowired
-
     ModelMapper modelMapper;
 
     private Class<E> entityClass;
     private Class<D> dtoClass;
+
+
 
     AbstractMapper(Class<E> entityClass, Class<D> dtoClass) {
         this.entityClass = entityClass;
