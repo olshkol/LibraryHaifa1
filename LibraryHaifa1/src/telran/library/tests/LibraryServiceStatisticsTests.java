@@ -4,7 +4,10 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import telran.library.dto.Book;
 import telran.library.dto.PublisherAuthor;
 import telran.library.dto.Reader;
@@ -18,9 +21,9 @@ import java.util.HashSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-//@SpringBootApplication(scanBasePackages = "telran.library")  // components root directory
-//@EnableJpaRepositories(basePackages = "telran.library.service")  // repositories root directory
-//@EntityScan(basePackages = "telran.library.domain.entities") // entities root directory
+@SpringBootApplication(scanBasePackages = "telran.library")  // components root directory
+@EnableJpaRepositories(basePackages = "telran.library.service")  // repositories root directory
+@EntityScan(basePackages = "telran.library.domain.entities") // entities root directory
 class LibraryServiceStatisticsTests {
     private static final int N_BOOKS = 4;
     static ConfigurableApplicationContext ctx;
@@ -80,6 +83,7 @@ class LibraryServiceStatisticsTests {
 
     @Test
     void testGetMostPopularBooks() {
+        fail("Not yet implemented");
        /* int age1 = LocalDate.now().getYear() - BIRTH_YEAR_YOUNG - 1;
         int age2 = LocalDate.now().getYear() - BIRTH_YEAR_OLD + 1;
         Book bookItem1 = library.getBookItem(isbns[0]);
@@ -94,7 +98,8 @@ class LibraryServiceStatisticsTests {
 
     @Test
     void testGetMostActiveReaders() {
-        fail("Not yet implemented");
+        assertEquals(Arrays.asList(library.getReader(1)),
+                library.getMostActiveReaders(initialDate, LocalDate.now()));
     }
 
     @Test

@@ -49,8 +49,8 @@ public class RecordMapper extends AbstractMapper<RecordEntity, Record> {
         if(!Objects.isNull(recordEntity)) {
             record.setIsbn(recordEntity.getBook().getIsbn());
             record.setReaderId(recordEntity.getReader().getId());
-            record.setDatePickingUp(recordEntity.getDatePickingingUp());
-            long daysInUse = ChronoUnit.DAYS.between(recordEntity.getDatePickingingUp(), LocalDate.now());
+            record.setDatePickingUp(recordEntity.getDatePickingUp());
+            long daysInUse = ChronoUnit.DAYS.between(recordEntity.getDatePickingUp(), LocalDate.now());
             record.setDaysDelayed(daysInUse - recordEntity.getBook().getMaxDaysInUse());
         }
     }

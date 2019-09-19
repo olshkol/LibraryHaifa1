@@ -4,10 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import telran.library.dto.*;
 import telran.library.service.interfaces.ILibrary;
 
@@ -16,9 +13,9 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootApplication(scanBasePackages = "telran.library") //components root directory (component, service, repository)
-@EnableJpaRepositories(basePackages = "telran.library.service") //repositories
-@EntityScan(basePackages = "telran.library.domain.entities")
+//@SpringBootApplication(scanBasePackages = "telran.library") //components root directory (component, service, repository)
+//@EnableJpaRepositories(basePackages = "telran.library.service") //repositories
+//@EntityScan(basePackages = "telran.library.domain.entities")
         //entities
 class LibraryServiceTests {
     private static ConfigurableApplicationContext applicationContext;

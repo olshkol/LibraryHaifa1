@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 @ToString(exclude = "records")
 @Getter

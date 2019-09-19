@@ -10,9 +10,11 @@ import telran.library.mappers.Mapper;
 import telran.library.service.interfaces.*;
 
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -270,7 +272,7 @@ public class LibraryService implements ILibrary {
         if (Objects.isNull(from)) from = MIN_DATE;
         if (Objects.isNull(to)) to = LocalDate.now();
 
-        return recordRepo.getByBookAndDatePickingingUpBetween(book, from, to)
+        return recordRepo.getByBookAndDatePickingUpBetween(book, from, to)
                 .stream()
                 .map(recordEntity -> recordMapper.toDto(recordEntity))
                 .collect(Collectors.toList());
@@ -284,7 +286,7 @@ public class LibraryService implements ILibrary {
         if (Objects.isNull(from)) from = MIN_DATE;
         if (Objects.isNull(to)) to = LocalDate.now();
 
-        return recordRepo.getByReaderAndDatePickingingUpBetween(reader, from, to)
+        return recordRepo.getByReaderAndDatePickingUpBetween(reader, from, to)
                 .stream()
                 .map(recordEntity -> recordMapper.toDto(recordEntity))
                 .collect(Collectors.toList());
@@ -307,20 +309,11 @@ public class LibraryService implements ILibrary {
 
     @Override
     public List<Book> getMostPopularBooks(LocalDate from_date, LocalDate to_date, int from_age, int to_age) {
-        //todo getMostPopularBooks
-        Map<BookEntity, Long> collect = recordRepo.findAll().stream()
-                .filter(recordEntity -> {
-                    int readerAge = Period.between(LocalDate.now(), recordEntity.getReader().getBirthDate()).getYears();
-                    return (recordEntity.getDatePickingingUp().isAfter(from_date) &&
-                            recordEntity.getDatePickingingUp().isBefore(to_date)) &&
-                            (readerAge > from_age && readerAge < to_age);
-                })
-                .collect(Collectors.groupingBy(RecordEntity::getBook, TreeMap::new, Collectors.counting()))
-                .entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByValue())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (aLong, aLong2) -> aLong, LinkedHashMap::new));
-
+//        return recordRepo.getMostPopularBook(from_date, to_date, from_age, to_age)
+//                .stream()
+//                .map(bookEntity -> bookMapper.toDto(bookEntity))
+//                .collect(Collectors.toList());
+        // TODO Auto-generated method stub
         return null;
     }
 
@@ -332,8 +325,11 @@ public class LibraryService implements ILibrary {
 
     @Override
     public List<Reader> getMostActiveReaders(LocalDate from, LocalDate to) {
-        // TODO Auto-generated method stub
-        return null;
+        List<ReaderEntity> mostActiveReaders = recordRepo.getMostActiveReaders(from, to);
+        return mostActiveReaders
+                .stream()
+                .map(readerEntity -> readerMapper.toDto(readerEntity))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -373,7 +369,7 @@ public class LibraryService implements ILibrary {
                 .map(recordEntity ->
                         new ReaderBookDelay(recordEntity.getBook().getIsbn(),
                                 recordEntity.getReader().getId(),
-                                ChronoUnit.DAYS.between(recordEntity.getDatePickingingUp(), LocalDate.now()) -
+                                ChronoUnit.DAYS.between(recordEntity.getDatePickingUp(), LocalDate.now()) -
                                         recordEntity.getBook().getMaxDaysInUse()
                         ))
                 .collect(Collectors.toList());
@@ -385,6 +381,6 @@ public class LibraryService implements ILibrary {
         if (Objects.isNull(book)) return null;
         ReaderEntity reader = readerRepo.findById(readerId).orElse(null);
         if (Objects.isNull(reader)) return null;
-        return recordMapper.toDto(recordRepo.getByBookAndReaderAndDatePickingingUp(book, reader, datePickingingUp));
+        return recordMapper.toDto(recordRepo.getByBookAndReaderAndDatePickingUp(book, reader, datePickingingUp));
     }
 }
